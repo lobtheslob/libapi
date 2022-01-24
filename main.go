@@ -1,4 +1,4 @@
-package main
+package libapi
 
 import (
 	"net/http"

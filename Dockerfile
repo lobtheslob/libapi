@@ -1,4 +1,4 @@
-FROM golang:1.15 as base
+FROM golang:1.17 as base
 
 # Install the watcher
 RUN go get github.com/codegangsta/gin
