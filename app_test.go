@@ -11,8 +11,7 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 )
 
-
-func NewMock() (*sql.DB) {
+func NewMock() *sql.DB {
 	db, _, err := sqlmock.New()
 	if err != nil {
 		log.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -25,31 +24,31 @@ func executeRequest(req *http.Request) *httptest.ResponseRecorder {
 	db := NewMock()
 	repo := NewRepository(db)
 
-    rr := httptest.NewRecorder()
+	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(getBook(repo))
-    handler.ServeHTTP(rr, req)
+	handler.ServeHTTP(rr, req)
 
-    return rr
+	return rr
 }
 
 func checkResponseCode(t *testing.T, expected, actual int) {
-    if expected != actual {
-        t.Errorf("Expected response code %d. Got %d\n", expected, actual)
-    }
+	if expected != actual {
+		t.Errorf("Expected response code %d. Got %d\n", expected, actual)
+	}
 }
 
 func TestGetBookThatIsNOTInLibrary(t *testing.T) {
 
-    req, _ := http.NewRequest("GET", "/books/11111111", nil)
-    response := executeRequest(req)
+	req, _ := http.NewRequest("GET", "/books/11111111", nil)
+	response := executeRequest(req)
 
-    checkResponseCode(t, http.StatusNotFound, response.Code)
+	checkResponseCode(t, http.StatusNotFound, response.Code)
 
-    var m map[string]string
-    json.Unmarshal(response.Body.Bytes(), &m)
-    if m["error"] != "book not found" {
-        t.Errorf("Expected the 'error' key of the response to be set to 'book not found'. Got '%s'", m["error"])
-    }
+	var m map[string]string
+	json.Unmarshal(response.Body.Bytes(), &m)
+	if m["error"] != "book not found" {
+		t.Errorf("Expected the 'error' key of the response to be set to 'book not found'. Got '%s'", m["error"])
+	}
 }
 
 //func TestCreateBook(t *testing.T) {

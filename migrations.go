@@ -37,7 +37,7 @@ func handleMigrations(db *sql.DB) error {
 	//		log.Error("an error occurred with migrations3: ", err)
 	//	}
 
-	//// when stupid, reset to specific versions (dirty - figure better way) 
+	//// when stupid, reset to specific versions (dirty - figure better way)
 	//if err = m.Force(0); err != nil {
 	//	log.Error(err)
 	//	return err
