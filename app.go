@@ -26,7 +26,6 @@ func getBooks(repo Repository) http.HandlerFunc {
 // Get single book
 func getBook(repo Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
 		params := mux.Vars(r) // Gets params
 		books, err := repo.Find()
 		log.Info(err)
@@ -48,7 +47,6 @@ func getBook(repo Repository) http.HandlerFunc {
 // Add new book
 func createBook(repo Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
 		var book Book
 		_ = json.NewDecoder(r.Body).Decode(&book)
 		err := repo.Create(book)
@@ -63,7 +61,6 @@ func createBook(repo Repository) http.HandlerFunc {
 // Delete book
 func deleteBook(repo Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
 		params := mux.Vars(r)
 		books, _ := repo.Find()
 		for idx, item := range books {
@@ -85,7 +82,6 @@ func deleteBook(repo Repository) http.HandlerFunc {
 // Update book
 func updateBook(repo Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
 		params := mux.Vars(r)
 		books, _ := repo.Find()
 		for idx, item := range books {
