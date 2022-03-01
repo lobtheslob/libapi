@@ -1,4 +1,4 @@
-package libapi
+package main
 
 import (
 	"net/http"
@@ -28,7 +28,15 @@ func main() {
 	// Init router
 	r := mux.NewRouter()
 
+	//
+
+	//	func setContentType(func apiFunc, func Repostitory) http.HandlerFunc {
+	//		return func(w http.ResponseWriter, r *http.Request) {
+	//				apiFunc.w.Header().Set("Content-Type", "application/json")
+	//		}
+	//	}
 	// Route handles & endpoint
+	//	r.HandleFunc("/books", setContentType(getBooks, repo)).Methods("GET")
 	r.HandleFunc("/books", getBooks(repo)).Methods("GET")
 	r.HandleFunc("/books/{id}", getBook(repo)).Methods("GET")
 	r.HandleFunc("/books", createBook(repo)).Methods("POST")

@@ -1,4 +1,4 @@
-package libapi
+package main
 
 import (
 	"context"
@@ -74,7 +74,8 @@ func (r Repository) Find() ([]Book, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		book := new(Book)
+		var book Book
+		//		book := new(Book)
 		err = rows.Scan(
 			&book.ID,
 			&book.Name,
@@ -85,7 +86,7 @@ func (r Repository) Find() ([]Book, error) {
 		if err != nil {
 			return nil, err
 		}
-		books = append(books, *book)
+		books = append(books, book)
 	}
 
 	return books, nil
@@ -113,7 +114,7 @@ func (r Repository) Delete(id string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	query := "DELETE FROM books WHERE id = ?"
+	query := "DELETE FROM book WHERE id = ?"
 	stmt, err := r.db.PrepareContext(ctx, query)
 	if err != nil {
 		return err

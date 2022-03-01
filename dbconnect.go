@@ -1,4 +1,4 @@
-package libapi
+package main
 
 import (
 	"database/sql"
@@ -9,13 +9,13 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func connectToDB() (*sql.DB) {
+func connectToDB() *sql.DB {
 	mysqlChan := make(chan *sql.DB, 1)
 
 	go func() {
 
 		sqlHost := os.Getenv("DB_HOST")
-		sqlDSN := fmt.Sprintf("mysql:example@tcp(%s:3306)/library", sqlHost)
+		sqlDSN := fmt.Sprintf("mysql:example@tcp(%s:3307)/library", sqlHost)
 		cruddb, err := sql.Open("mysql", sqlDSN)
 		if err != nil {
 			log.Fatal(fmt.Errorf("error connecting to mysql db %+v", err))
@@ -42,6 +42,7 @@ func connectToDB() (*sql.DB) {
 	done := false
 
 	for !done {
+		log.Info("done is ", done)
 		select {
 		case db := <-mysqlChan:
 			if mysqlDB == nil {
@@ -50,9 +51,10 @@ func connectToDB() (*sql.DB) {
 					done = true
 				}
 			}
+			log.Info("done is ", done)
 		}
 	}
 
-	// instantiate a new mysql connection 
+	// instantiate a new mysql connection
 	return mysqlDB
 }

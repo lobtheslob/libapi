@@ -1,4 +1,4 @@
-package libapi
+package main
 
 // Book struct (Model)
 type Book struct {

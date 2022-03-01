@@ -1,4 +1,4 @@
-package libapi
+package main
 
 import (
 	"database/sql"

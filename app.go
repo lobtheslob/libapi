@@ -1,4 +1,4 @@
-package libapi
+package main
 
 import (
 	"encoding/json"
@@ -6,17 +6,18 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	log "github.com/sirupsen/logrus"
 )
 
 // Init var books as a slice of Book struct
 var books []Book
 
 // Get all books
-func getBooks(repo Repository) http.HandlerFunc{
+func getBooks(repo Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		books, err := repo.Find()
-		if err != nil {
+		if err == nil {
 			json.NewEncoder(w).Encode(books)
 		}
 	}
@@ -27,11 +28,14 @@ func getBook(repo Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		params := mux.Vars(r) // Gets params
+		books, err := repo.Find()
+		log.Info(err)
 		for _, item := range books {
 			itemID, _ := strconv.ParseInt(params["id"], 10, 32)
-			if string(rune(itemID)) == params["id"] {
-				item, err := repo.FindByID(string(rune(item.ID)))
-				if err != nil { 
+			log.Info("inside get book, itemID: ", itemID)
+			if int64(item.ID) == itemID {
+				item, err := repo.FindByID(params["id"])
+				if err == nil {
 					json.NewEncoder(w).Encode(item)
 					return
 				}
@@ -49,7 +53,7 @@ func createBook(repo Repository) http.HandlerFunc {
 		_ = json.NewDecoder(r.Body).Decode(&book)
 		err := repo.Create(book)
 		if err != nil {
-		  return 
+			return
 		}
 		books = append(books, book)
 		json.NewEncoder(w).Encode(book)
@@ -61,11 +65,12 @@ func deleteBook(repo Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		params := mux.Vars(r)
+		books, _ := repo.Find()
 		for idx, item := range books {
-			bookID, _ := strconv.ParseInt(params["id"], 10, 32)
-			item.ID = int(bookID)
-			if string(rune(item.ID)) == params["id"] {
-				err :=  repo.Delete(string(rune(item.ID)))
+			i, _ := strconv.ParseInt(params["id"], 10, 64)
+			if int64(item.ID) == i {
+				err := repo.Delete(params["id"])
+				log.Error(err)
 				if err != nil {
 					break
 				}
@@ -76,22 +81,23 @@ func deleteBook(repo Repository) http.HandlerFunc {
 		json.NewEncoder(w).Encode(books)
 	}
 }
+
 // Update book
 func updateBook(repo Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json")
 		params := mux.Vars(r)
+		books, _ := repo.Find()
 		for idx, item := range books {
-				bookID, _ := strconv.ParseInt(params["id"], 10, 32)
-				item.ID = int(bookID)
-			if string(rune(item.ID)) == params["id"] {
+			i, _ := strconv.ParseInt(params["id"], 10, 64)
+			if int64(item.ID) == i {
 				books = append(books[:idx], books[idx+1:]...)
 				var book Book
 				_ = json.NewDecoder(r.Body).Decode(&book)
 				err := repo.Update(book)
 				if err != nil {
 					return
-				} 
+				}
 				books = append(books, book)
 				json.NewEncoder(w).Encode(book)
 				return

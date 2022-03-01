@@ -1,4 +1,4 @@
-module github.com/lobtheslob/libapi
+module libapi
 
 go 1.17
 
