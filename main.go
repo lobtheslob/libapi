@@ -28,15 +28,13 @@ func main() {
 	// Init router
 	r := mux.NewRouter()
 
-	//
+	//decided to write middleware to handle setting header
+	//this didn't seem sexy, only functional after reading docs
+	//https://github.com/gorilla/mux/blob/v1.8.0/middleware.go#L11
+	//https://pkg.go.dev/github.com/gorilla/mux#section-readme
 
-	//	func setContentType(func apiFunc, func Repostitory) http.HandlerFunc {
-	//		return func(w http.ResponseWriter, r *http.Request) {
-	//				apiFunc.w.Header().Set("Content-Type", "application/json")
-	//		}
-	//	}
-	// Route handles & endpoint
-	//	r.HandleFunc("/books", setContentType(getBooks, repo)).Methods("GET")
+	r.Use(setHeaderContentMiddleware)
+
 	r.HandleFunc("/books", getBooks(repo)).Methods("GET")
 	r.HandleFunc("/books/{id}", getBook(repo)).Methods("GET")
 	r.HandleFunc("/books", createBook(repo)).Methods("POST")
@@ -46,4 +44,11 @@ func main() {
 	// Start server
 	log.Fatal(http.ListenAndServe(":8080", r))
 
+}
+
+func setHeaderContentMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		next.ServeHTTP(w, r)
+	})
 }

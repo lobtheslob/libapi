@@ -15,8 +15,8 @@ var books []Book
 // Get all books
 func getBooks(repo Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
 		books, err := repo.Find()
+		log.Info(books)
 		if err == nil {
 			json.NewEncoder(w).Encode(books)
 		}
