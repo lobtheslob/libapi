@@ -1,7 +1,7 @@
-FROM golang:1.17 as base
+FROM golang:1.18 as base
 
 # Install the watcher
-RUN go get github.com/codegangsta/gin
+RUN go install github.com/codegangsta/gin@latest
 
 # Download deps
 WORKDIR /app
@@ -29,4 +29,5 @@ RUN GOOS=linux GOARCH=386\
 FROM alpine:3.7
 WORKDIR /app
 COPY --from=builder /app/app .
+EXPOSE 8080-8081
 CMD [ "./app"]
